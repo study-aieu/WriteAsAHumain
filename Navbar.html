@@ -1,0 +1,27 @@
+import { CircleHelp, Heading6 } from "lucide-react";
+import { Link } from "wouter";
+
+export default function Navbar() {
+  return (
+    <nav className="bg-white shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex items-center">
+            <Link href="/" className="flex items-center">
+              <img src="/images/studyai-logo.svg" alt="StudyAI Logo" className="h-10 w-10" />
+              <span className="ml-2 text-xl font-semibold text-neutral-dark">StudyAI</span>
+            </Link>
+          </div>
+          <div className="flex items-center space-x-4">
+            <button className="p-2 rounded-full text-neutral-medium hover:text-primary hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary">
+              <CircleHelp className="h-6 w-6" />
+            </button>
+            <button className="p-2 rounded-full text-neutral-medium hover:text-primary hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary">
+              <Heading6 className="h-6 w-6" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+}

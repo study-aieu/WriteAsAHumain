@@ -1,0 +1,348 @@
+import { useState } from "react";
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Copy, RefreshCw } from "lucide-react";
+import LoadingOverlay from "@/components/LoadingOverlay";
+
+export type ContentPreferences = {
+  length: "Short (250 words)" | "Medium (500 words)" | "Long (1000+ words)";
+  style: "Academic" | "Informative" | "Creative" | "Persuasive";
+};
+
+export default function AIHumanDetector() {
+  const [topic, setTopic] = useState("");
+  const [details, setDetails] = useState("");
+  const [length, setLength] = useState<ContentPreferences["length"]>("Medium (500 words)");
+  const [style, setStyle] = useState<ContentPreferences["style"]>("Informative");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedContent, setGeneratedContent] = useState<string | null>(null);
+  const [humanLikeScore, setHumanLikeScore] = useState<number | null>(null);
+  
+  const handleGenerate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!topic) return;
+    
+    setIsGenerating(true);
+    setGeneratedContent(null);
+    setHumanLikeScore(null);
+    
+    try {
+      // This would normally be an API call to generate content
+      // For demo purposes, we're generating it locally
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Generate sample content based on the topic and style
+      let sampleContent;
+      
+      if (style === "Academic") {
+        sampleContent = `# ${topic}\n\nIn academic discourse, the ${topic} presents a complex array of considerations that merit thorough analysis. Research indicates that there are multiple facets to consider when examining this subject in detail. The literature suggests several key themes and theoretical frameworks that can be applied to better understand the implications.\n\nMoreover, empirical evidence supports the notion that ${topic} significantly impacts various domains of knowledge. Scholars have extensively documented these effects through rigorous methodological approaches and data analysis techniques. The findings consistently demonstrate correlations between ${topic} and several dependent variables of interest.\n\nFurthermore, it is important to acknowledge the limitations of current research and suggest avenues for future investigation. A comprehensive understanding of ${topic} requires interdisciplinary perspectives and innovative research designs that address existing gaps in the literature.`;
+      } else if (style === "Creative") {
+        sampleContent = `# ${topic}\n\nThe sun cast long shadows across the landscape as I pondered the meaning of ${topic}. There's something magical about the way ideas dance through our minds, connecting seemingly unrelated concepts into a tapestry of understanding.\n\nI remember the first time I encountered ${topic} - it was a rainy Tuesday afternoon, and the world seemed full of possibilities. The raindrops tapping against the window created a rhythm that matched the beating of my curious heart.\n\nPerhaps we'll never fully grasp the complete essence of ${topic}, but isn't that the beauty of exploration? To chase understanding, knowing that the journey itself transforms us in ways we could never predict. Every question answered spawns a dozen more, like stars being born in the vast universe of knowledge.`;
+      } else if (style === "Persuasive") {
+        sampleContent = `# ${topic}\n\nIt is absolutely clear that ${topic} represents one of the most critical issues of our time. We can no longer afford to ignore the overwhelming evidence and compelling arguments that support immediate action on this front.\n\nConsider, for a moment, the significant implications of failing to address ${topic} properly. The consequences affect not just individuals, but communities, nations, and indeed our entire collective future. The time for debate has passed - now is the time for decisive action.\n\nI urge you to recognize the urgency of this matter. By prioritizing ${topic} in our discussions and policy decisions, we can create meaningful change that benefits everyone. The alternative - continuing on our current path - is simply unacceptable if we care about creating a better world for generations to come.`;
+      } else { // Informative (default)
+        sampleContent = `# ${topic}\n\n${topic} encompasses a variety of important elements worth exploring in detail. When examining this subject, several key factors emerge that help us understand its significance and practical applications in real-world contexts.\n\nFirst, it's important to recognize the fundamental principles that underlie ${topic}. These core concepts provide a framework for analyzing related phenomena and developing practical approaches to common challenges in this area.\n\nAdditionally, recent developments have expanded our understanding of ${topic} considerably. New research and case studies offer valuable insights that can help individuals and organizations make better-informed decisions when dealing with matters related to this subject.`;
+      }
+      
+      // Adjust length based on preference
+      if (length === "Short (250 words)") {
+        // Truncate content for short version
+        sampleContent = sampleContent.split('\n\n').slice(0, 2).join('\n\n');
+      } else if (length === "Long (1000+ words)") {
+        // Add more content for long version
+        sampleContent += `\n\nFurthermore, when we consider ${topic} in a broader context, additional nuances emerge that merit careful consideration. Various stakeholders approach this subject with different perspectives and priorities, leading to a rich diversity of viewpoints and proposed solutions.\n\nHistorically, attitudes toward ${topic} have evolved significantly, reflecting changing social values, technological capabilities, and economic realities. Examining this evolution provides valuable insights into current approaches and possible future directions.\n\nMoreover, cross-cultural comparisons reveal fascinating variations in how different societies address ${topic}. These differences often reflect deeper cultural values and institutional arrangements that shape responses to common challenges.\n\nExperts in the field generally agree on several best practices when dealing with ${topic}, though healthy debate continues regarding optimal approaches in specific contexts. This ongoing dialogue drives innovation and refinement of methodologies.\n\nIt's also worth noting the interdisciplinary nature of ${topic}, which intersects with numerous other fields including psychology, economics, political science, and technology. These connections enrich our understanding and open up new avenues for research and application.\n\nLooking to the future, emerging trends suggest that ${topic} will continue to evolve in response to changing circumstances and new discoveries. Staying informed about these developments will be essential for anyone seeking to navigate this dynamic landscape effectively.`;
+      }
+      
+      // Generate a human-likeness score based on style and length
+      // More creative content appears more human-like in this simulation
+      let baseScore;
+      if (style === "Creative") {
+        baseScore = 75; // Creative content appears more human-like
+      } else if (style === "Academic") {
+        baseScore = 55; // Academic content appears more structured/AI-like
+      } else if (style === "Persuasive") {
+        baseScore = 65; // Persuasive content is in the middle
+      } else {
+        baseScore = 60; // Informative is slightly more structured
+      }
+      
+      // Add some randomness
+      const score = Math.min(95, Math.max(30, baseScore + (Math.floor(Math.random() * 20) - 10)));
+      
+      setGeneratedContent(sampleContent);
+      setHumanLikeScore(score);
+    } catch (error) {
+      console.error("Error generating content:", error);
+      // Show a fallback message in case of error
+      setGeneratedContent("An error occurred while generating content. Please try again.");
+      setHumanLikeScore(null);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+  
+  const handleImproveContent = () => {
+    if (!generatedContent || humanLikeScore === null) return;
+    
+    setIsGenerating(true);
+    
+    // Simulate API call with setTimeout
+    setTimeout(() => {
+      // Make content more human-like
+      let newContent = generatedContent;
+      
+      // Replace formal academic phrases with more conversational ones
+      newContent = newContent.replace(/In academic discourse/g, "When I think about academics");
+      newContent = newContent.replace(/empirical evidence supports/g, "research actually shows");
+      newContent = newContent.replace(/the literature suggests/g, "many experts think");
+      
+      // Add some first-person perspective
+      newContent = newContent.replace(/It is important to/g, "I think it is important to");
+      newContent = newContent.replace(/Additionally/g, "Also, from what I have seen");
+      
+      // Add some conversational elements and rhetorical questions
+      newContent = newContent.replace(/various domains/g, "many different areas");
+      
+      // Add casual language
+      newContent = newContent.replace(/it is/g, "it is actually");
+      newContent = newContent.replace(/does not/g, "does not really");
+      newContent = newContent.replace(/cannot/g, "cannot easily");
+      
+      // Increase the human-likeness score by 15-25%
+      const improvementAmount = Math.floor(Math.random() * 10) + 15;
+      const newScore = Math.min(95, humanLikeScore + improvementAmount);
+      
+      // Update state with improved content and score
+      setGeneratedContent(newContent);
+      setHumanLikeScore(newScore);
+      setIsGenerating(false);
+    }, 2000);
+  };
+  
+  const handleRegenerateContent = () => {
+    if (!topic) return;
+    handleGenerate(new Event('submit') as any);
+  };
+  
+  return (
+    <main className="flex-1 p-4 md:p-6 lg:p-8 bg-gray-50">
+      {/* App Header */}
+      <div className="max-w-7xl mx-auto mb-8">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-semibold text-neutral-dark mb-2">AI Writing Assistant</h1>
+            <p className="text-neutral-dark">
+              Enter a topic or assignment prompt, and StudyAI will generate content while providing an AI detection score.
+            </p>
+          </div>
+          <Link href="/product-selection">
+            <Button 
+              variant="outline" 
+              className="border border-gray-300 rounded-full text-neutral-dark hover:bg-gray-50 transition-all px-6 py-3"
+            >
+              Back to Home
+            </Button>
+          </Link>
+        </div>
+      </div>
+
+      {/* Split view for iPad layout */}
+      <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-6 md:gap-8">
+        {/* Input Section */}
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <form onSubmit={handleGenerate} className="space-y-6">
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="topic" className="block text-sm font-medium text-neutral-dark mb-1">
+                  Topic or Assignment
+                </label>
+                <Input
+                  id="topic"
+                  placeholder="E.g., The impact of social media on teenagers"
+                  value={topic}
+                  onChange={(e) => setTopic(e.target.value)}
+                  className="w-full"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between">
+                  <label htmlFor="details" className="block text-sm font-medium text-neutral-dark mb-1">
+                    Details or Requirements
+                  </label>
+                  <span className="text-xs text-neutral-medium">{details.length}/500</span>
+                </div>
+                <Textarea
+                  id="details"
+                  placeholder="Add any specific requirements, points to cover, or details about your assignment..."
+                  value={details}
+                  onChange={(e) => setDetails(e.target.value)}
+                  className="min-h-32 resize-y"
+                  maxLength={500}
+                />
+              </div>
+
+              <div className="pt-2">
+                <h3 className="text-sm font-medium text-neutral-dark mb-3">Content Preferences</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-neutral-medium mb-1">Length:</label>
+                    <Select value={length} onValueChange={(value) => setLength(value as ContentPreferences["length"])}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select length" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Short (250 words)">Short (250 words)</SelectItem>
+                        <SelectItem value="Medium (500 words)">Medium (500 words)</SelectItem>
+                        <SelectItem value="Long (1000+ words)">Long (1000+ words)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-neutral-medium mb-1">Style:</label>
+                    <Select value={style} onValueChange={(value) => setStyle(value as ContentPreferences["style"])}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select style" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Academic">Academic</SelectItem>
+                        <SelectItem value="Informative">Informative</SelectItem>
+                        <SelectItem value="Creative">Creative</SelectItem>
+                        <SelectItem value="Persuasive">Persuasive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-black font-medium"
+              disabled={isGenerating || !topic}
+            >
+              {isGenerating ? "Generating..." : "Analyze Text"}
+            </Button>
+          </form>
+        </div>
+
+        {/* Output Section */}
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold text-neutral-dark">Generated Content</h2>
+            <div className="flex space-x-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-neutral-medium"
+                title="Copy to clipboard"
+                disabled={!generatedContent}
+                onClick={() => {
+                  if (generatedContent) {
+                    navigator.clipboard.writeText(generatedContent)
+                      .then(() => {
+                        // You could add a toast notification here
+                        console.log('Content copied to clipboard');
+                      })
+                      .catch(err => {
+                        console.error('Failed to copy: ', err);
+                      });
+                  }
+                }}
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-neutral-medium"
+                title="Regenerate content"
+                disabled={!generatedContent || isGenerating}
+                onClick={handleRegenerateContent}
+              >
+                <RefreshCw className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium">AI Detection Score</span>
+              <span className="text-sm font-medium">
+                {humanLikeScore !== null ? `${humanLikeScore}%` : "N/A"}
+              </span>
+            </div>
+            {humanLikeScore !== null && (
+              <>
+                <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1.5">
+                  <div
+                    className="h-1.5 rounded-full bg-primary"
+                    style={{ width: `${humanLikeScore}%` }}
+                  ></div>
+                </div>
+                <div className="flex justify-between text-xs text-neutral-medium mt-1">
+                  <span>AI-like</span>
+                  <span>Human-like</span>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="border border-gray-200 rounded-lg p-4 min-h-[300px] mb-4">
+            {generatedContent ? (
+              <div className="whitespace-pre-line">{generatedContent}</div>
+            ) : (
+              <div className="text-center text-neutral-medium py-16">
+                Generated content will appear here
+              </div>
+            )}
+          </div>
+
+          {generatedContent && (
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                className="border-gray-300 text-neutral-medium"
+                onClick={handleImproveContent}
+                disabled={isGenerating}
+              >
+                Make More Human-like
+              </Button>
+              <Button
+                className="bg-blue-500 hover:bg-blue-600 text-black font-medium ml-2"
+                onClick={() => {
+                  // Create a blob with the text content
+                  const blob = new Blob([generatedContent || ''], { type: 'text/plain' });
+                  const url = URL.createObjectURL(blob);
+                  
+                  // Create a download link and click it
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `${topic?.replace(/\s+/g, '-').toLowerCase() || 'generated-content'}-${new Date().toISOString().split('T')[0]}.txt`;
+                  document.body.appendChild(a);
+                  a.click();
+                  
+                  // Clean up
+                  setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                  }, 0);
+                }}
+                disabled={isGenerating || !generatedContent}
+              >
+                Export
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {isGenerating && <LoadingOverlay contentLength={length} />}
+    </main>
+  );
+}

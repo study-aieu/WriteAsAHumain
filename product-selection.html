@@ -1,0 +1,98 @@
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Brain, BookText, Upload, Clock3, FileText, CheckCircle } from "lucide-react";
+
+export default function ProductSelection() {
+  return (
+    <main className="flex-1 bg-white">
+      <div className="container mx-auto px-4 py-16 max-w-6xl">
+        <h1 className="text-3xl md:text-4xl font-bold text-center text-neutral-dark mb-6">
+          Choose Your StudyAI Tool
+        </h1>
+        <p className="text-xl text-neutral-medium text-center mb-12 max-w-3xl mx-auto">
+          Select the AI tool that best fits your learning needs
+        </p>
+
+        <div className="grid md:grid-cols-2 gap-8 mb-16">
+          {/* AI Human Detector Card */}
+          <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+            <div className="bg-indigo-50 p-6 flex items-center justify-center">
+              <Brain className="h-20 w-20 text-primary" />
+            </div>
+            <div className="p-6">
+              <h2 className="text-2xl font-bold text-neutral-dark mb-3">AI Human Detector</h2>
+              <p className="text-neutral-medium mb-6">
+                Check content to determine whether it was written by a human or AI. Get a human-likeness score and improve AI-generated content to appear more natural.
+              </p>
+              
+              <div className="space-y-3 mb-6">
+                <div className="flex items-start">
+                  <CheckCircle className="h-5 w-5 text-primary mr-2 mt-0.5" />
+                  <p className="text-neutral-medium">Get human-likeness score (0-100%)</p>
+                </div>
+                <div className="flex items-start">
+                  <CheckCircle className="h-5 w-5 text-primary mr-2 mt-0.5" />
+                  <p className="text-neutral-medium">Improve AI-generated content</p>
+                </div>
+                <div className="flex items-start">
+                  <CheckCircle className="h-5 w-5 text-primary mr-2 mt-0.5" />
+                  <p className="text-neutral-medium">Learn about AI detection markers</p>
+                </div>
+              </div>
+              
+              <Link href="/ai-human-detector">
+                <Button className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 rounded-lg">
+                  <Brain className="h-5 w-5 mr-2" />
+                  Open AI Human Detector
+                </Button>
+              </Link>
+            </div>
+          </div>
+          
+          {/* Homework Helper Card */}
+          <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+            <div className="bg-indigo-50 p-6 flex items-center justify-center">
+              <BookText className="h-20 w-20 text-primary" />
+            </div>
+            <div className="p-6">
+              <h2 className="text-2xl font-bold text-neutral-dark mb-3">Homework Helper</h2>
+              <p className="text-neutral-medium mb-6">
+                Upload your homework or assignment and get instant AI help. Study smarter, not harder with our quick assistance tool.
+              </p>
+              
+              <div className="space-y-3 mb-6">
+                <div className="flex items-start">
+                  <Upload className="h-5 w-5 text-primary mr-2 mt-0.5" />
+                  <p className="text-neutral-medium">Upload homework files or images</p>
+                </div>
+                <div className="flex items-start">
+                  <Clock3 className="h-5 w-5 text-primary mr-2 mt-0.5" />
+                  <p className="text-neutral-medium">Get solutions in just 3 seconds</p>
+                </div>
+                <div className="flex items-start">
+                  <FileText className="h-5 w-5 text-primary mr-2 mt-0.5" />
+                  <p className="text-neutral-medium">Receive step-by-step explanations</p>
+                </div>
+              </div>
+              
+              <Link href="/homework-helper">
+                <Button className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 rounded-lg">
+                  <BookText className="h-5 w-5 mr-2" />
+                  Open Homework Helper
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+        
+        <div className="text-center">
+          <Link href="/">
+            <Button variant="outline" className="border-gray-200 text-neutral-medium hover:text-primary">
+              Back to Home
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </main>
+  );
+}
